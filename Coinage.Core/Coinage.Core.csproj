@@ -4,8 +4,4 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Classes\Base\bdwigizw.5fc~" />
-  </ItemGroup>
-
 </Project>

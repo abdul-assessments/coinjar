@@ -8,7 +8,7 @@ namespace Coinage.Api.Extensions.MemoryCache
 {
     public static class DataExtensions
     {
-        public static void Initialize(this IMemoryCache cache, IVolumeConstantsDataService volumeConstants)
+        public static IMemoryCache Initialize(this IMemoryCache cache, IVolumeConstantsDataService volumeConstants)
         {
             if (!cache.TryGetValue("TotalJarVolume", out decimal val))
             {
@@ -18,6 +18,7 @@ namespace Coinage.Api.Extensions.MemoryCache
                 cache.SetJarRemainingVolume(totalJarVolume);
                 cache.SetJarTotalAmount(0);
             }
+            return cache;
         }        
     }
 }

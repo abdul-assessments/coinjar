@@ -4,7 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Coinage.Api.Config;
 using Coinage.Api.Extensions.MemoryCache;
+using Coinage.Api.Models;
 using Coinage.Api.Services;
+using Coinage.Core.Classes;
+using Coinage.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -16,34 +19,59 @@ namespace Coinage.Api.Controllers
     [ApiController]
     public class CoinJarController : ControllerBase
     {
-        private IMemoryCache _cache;
+        private CoinJar _coinJar;
+        private CircularCoinFactory _coinFactory;
         private JsonFileDataService _dataService;
         public CoinJarController(IMemoryCache cache, IOptions<CoinageConfig> coinageConfig)
         {                       
             _dataService = new JsonFileDataService("/Data", coinageConfig.Value.Type);
-            cache.Initialize(_dataService);
-            _cache = cache;
+            _coinJar = new CoinJar(cache.Initialize(_dataService));
+            _coinFactory = new CircularCoinFactory(_dataService);
         }
 
         [Route("addcoin")]
         [HttpPost]
-        public string AddCoinToJar()
+        public IActionResult AddCoinToJar(decimal amount)
         {
-
+            try
+            {
+                ICoin coin = _coinFactory.GetCoin(amount);
+                _coinJar.AddCoin(coin);
+                return Ok($"Remaining volume in cointaner - {_coinJar.RemainingVolume}");
+            }
+            catch
+            {
+                return BadRequest("Not enough space in jar for coin");
+            }
         }
 
         [Route("getamount")]
         [HttpGet]
-        public decimal GetAmountInJar()
+        public IActionResult GetAmountInJar()
         {
-            return _cache.GetJarTotalAmount();
+            try
+            {
+                return Ok(_coinJar.GetTotalAmount());
+            }
+            catch
+            {
+                return BadRequest();
+            }
         }
 
         [Route("reset")]
         [HttpGet]
-        public string ResetCoins()
+        public IActionResult ResetCoins()
         {
-
+            try
+            {
+                _coinJar.Reset();
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest();
+            }            
         }
     }
 }

@@ -18,7 +18,11 @@ namespace Coinage.Core.Classes.Base
                 _remainingVolume -= coin.Volume;
                 _totalAmount += coin.Amount;
                 UpdatePersistenceLayer();
-            }            
+            }
+            else
+            {
+                throw new Exception();
+            }
         }
 
         public decimal GetTotalAmount()
