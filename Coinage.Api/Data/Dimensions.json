@@ -1,0 +1,34 @@
+{
+  "US": [
+    {
+      "Amount":  1,
+      "Diameter": 19.05,
+      "Height": 1.52
+    },
+    {
+      "Amount": 5,
+      "Diameter": 21.21,
+      "Height": 1.95
+    },
+    {
+      "Amount": 10,
+      "Diameter": 17.91,
+      "Height": 1.35
+    },
+    {
+      "Amount": 25,
+      "Diameter": 24.26,
+      "Height": 1.75
+    },
+    {
+      "Amount": 50,
+      "Diameter": 30.61,
+      "Height": 2.15
+    },
+    {
+      "Amount": 100,
+      "Diameter": 38.1,
+      "Height": 2.58
+    }
+  ]
+}
