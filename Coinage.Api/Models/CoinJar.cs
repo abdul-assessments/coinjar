@@ -15,6 +15,7 @@ namespace Coinage.Api.Models
         public CoinJar(IMemoryCache cache)
         {
             _cache = cache;
+            Initialize();
         }
         private void Initialize()
         {

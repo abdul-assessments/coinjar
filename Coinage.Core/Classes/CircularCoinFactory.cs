@@ -6,23 +6,22 @@ using System.Text;
 
 namespace Coinage.Core.Classes
 {    
+    /// <summary>
+    /// Generate your coins with this guy
+    /// </summary>
     public class CircularCoinFactory : ICoinFactory
     {
         private IEnumerable<ICircularCoinDimension> _dimensions;
-        public CircularCoinFactory(IEnumerable<ICircularCoinDimension> dimensions)
-        {
-            _dimensions = dimensions;
-        }
 
         public CircularCoinFactory(IDimensionDataService<ICircularCoinDimension> dataService)
         {
             _dimensions = dataService.GetDimensions();
         }
 
-        public ICoin GetCoin(decimal amount)
+        public ICoin GetCoin<T>(decimal amount) where T : ICoin
         {
             ICircularCoinDimension dimension = _dimensions.FirstOrDefault(x => x.Amount.Equals(amount));
-            ICoin newCoin = Activator.CreateInstance<ICoin>();
+            ICoin newCoin = Activator.CreateInstance<T>();
 
             if (dimension != default(ICircularCoinDimension)){
                 newCoin.Amount = dimension.Amount;

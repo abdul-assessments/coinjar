@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Coinage.Api.Config;
+using Coinage.Api.Data;
+using Coinage.Api.Services;
+using Coinage.Core.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -25,7 +26,10 @@ namespace Coinage.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.Configure<CoinageConfig>(Configuration.GetSection(CoinageConfig.ConfigSection));
+            services.AddMvc(options => options.EnableEndpointRouting = false);
+
+            services.AddSingleton<IVolumeConstantsDataService>(new VolumeConstantsDataService<VolumeConstants>("Data/VolumeConstants.json"));
+            services.AddSingleton<IDimensionDataService<ICircularCoinDimension>>(new DimensionsDataService<IEnumerable<CircularDimensions>>("Data/Dimensions.json", "US"));           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,15 +49,7 @@ namespace Coinage.Api
             app.UseStaticFiles();
 
             app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
-            });
+            app.UseMvc();
         }
     }
 }

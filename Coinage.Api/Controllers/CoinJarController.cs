@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Coinage.Api.Config;
 using Coinage.Api.Extensions.MemoryCache;
 using Coinage.Api.Models;
 using Coinage.Api.Services;
@@ -21,31 +20,38 @@ namespace Coinage.Api.Controllers
     {
         private CoinJar _coinJar;
         private CircularCoinFactory _coinFactory;
-        private JsonFileDataService _dataService;
-        public CoinJarController(IMemoryCache cache, IOptions<CoinageConfig> coinageConfig)
-        {                       
-            _dataService = new JsonFileDataService("/Data", coinageConfig.Value.Type);
-            _coinJar = new CoinJar(cache.Initialize(_dataService));
-            _coinFactory = new CircularCoinFactory(_dataService);
+        public CoinJarController(IMemoryCache cache, IVolumeConstantsDataService volumeConstantsDataService, IDimensionDataService<ICircularCoinDimension> dimensionDataService)
+        {
+            _coinJar = new CoinJar(cache.Initialize(volumeConstantsDataService));
+            _coinFactory = new CircularCoinFactory(dimensionDataService);
         }
 
-        [Route("addcoin")]
+        [Route("add")]
         [HttpPost]
-        public IActionResult AddCoinToJar(decimal amount)
+        public IActionResult AddCoinToJar(PostedCoin postedCoin)
         {
+            decimal parsedAmount;
             try
             {
-                ICoin coin = _coinFactory.GetCoin(amount);
+                parsedAmount = Convert.ToDecimal(postedCoin.amount);
+            }
+            catch (FormatException)
+            {
+                return Ok("Not a decimal");
+            }
+            try
+            {
+                ICoin coin = _coinFactory.GetCoin<Coin>(parsedAmount);
                 _coinJar.AddCoin(coin);
-                return Ok($"Remaining volume in cointaner - {_coinJar.RemainingVolume}");
+                return Ok($"Remaining volume in cointaner : {Math.Round(_coinJar.RemainingVolume, 2)}");
             }
             catch
             {
-                return BadRequest("Not enough space in jar for coin");
+                return Ok($"Not enough space in jar for coin, remaining volume : {Math.Round(_coinJar.RemainingVolume, 2)}");
             }
         }
 
-        [Route("getamount")]
+        [Route("get")]
         [HttpGet]
         public IActionResult GetAmountInJar()
         {
@@ -66,7 +72,7 @@ namespace Coinage.Api.Controllers
             try
             {
                 _coinJar.Reset();
-                return Ok();
+                return Ok("Jar has been reset.");
             }
             catch
             {

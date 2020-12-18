@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Coinage.Core.Interfaces
+﻿namespace Coinage.Core.Interfaces
 {
     public interface ICoinFactory
     {
-        ICoin GetCoin(decimal amount);
+        ICoin GetCoin<T>(decimal amount) where T : ICoin;
     }
 }

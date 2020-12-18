@@ -1,8 +1,72 @@
-﻿@{
+﻿@model IEnumerable<Coinage.Core.Interfaces.ICircularCoinDimension>
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Welcome to the US coin jar</h1>
+    <table>
+        <tr>
+            <th>Coin Amounts:</th>
+            @foreach (Coinage.Core.Interfaces.ICircularCoinDimension coinDimension in Model)
+            {
+            <th>
+                <input type="radio" name="coin-amount" value="@coinDimension.Amount" />
+                @coinDimension.Amount
+            </th>
+            }
+        </tr>
+        <tr><td></td>
+            <td colspan="2">
+                <input id="add" type="button" value="Add Coin" />
+            </td>
+            <td colspan="2">
+                <input id="get" type="button" value="Get Amount" />
+            </td>
+            <td colspan="2">
+                <input id="reset" type="button" value="Reset Coin Jar" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7">
+                <span id="response"></span>
+            </td>
+        </tr>
+    </table>
 </div>
+
+<script>
+    $('#add').on('click', () => {
+        let obj = { amount: $('input[name="coin-amount"]:checked').val() };
+        $.ajax({
+            type: 'POST',
+            url: '/api/coinjar/add',
+            contentType: 'application/json',
+            data: JSON.stringify(obj),
+            dataType: 'text',
+            success: (response) => {
+                $('#response').html(response);
+            }
+        });
+    });
+    $('#get').on('click', () => {
+        $.ajax({
+            type: 'GET',
+            url: '/api/coinjar/get',
+            dataType: 'text',
+            success: (response) => {
+                $('#response').html(response);
+            }
+        });
+    });
+    $('#reset').on('click', () => {
+        $.ajax({
+            type: 'GET',
+            url: '/api/coinjar/reset',
+            dataType: 'text',
+            success: (response) => {
+                $('#response').html(response);
+            }
+        });
+    });
+</script>
