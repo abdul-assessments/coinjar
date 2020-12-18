@@ -11,7 +11,6 @@ namespace Coinage.Api.Models
     public class CoinJar : CoinJarBase
     {
         private IMemoryCache _cache;
-        public decimal RemainingVolume => _remainingVolume;
         public CoinJar(IMemoryCache cache)
         {
             _cache = cache;

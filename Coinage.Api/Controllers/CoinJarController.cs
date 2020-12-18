@@ -18,12 +18,12 @@ namespace Coinage.Api.Controllers
     [ApiController]
     public class CoinJarController : ControllerBase
     {
-        private CoinJar _coinJar;
-        private CircularCoinFactory _coinFactory;
-        public CoinJarController(IMemoryCache cache, IVolumeConstantsDataService volumeConstantsDataService, IDimensionDataService<ICircularCoinDimension> dimensionDataService)
+        private ICoinJar _coinJar;
+        private ICoinFactory _coinFactory;
+        public CoinJarController(ICoinFactory coinFactory, ICoinJar coinJar)
         {
-            _coinJar = new CoinJar(cache.Initialize(volumeConstantsDataService));
-            _coinFactory = new CircularCoinFactory(dimensionDataService);
+            _coinJar = coinJar;
+            _coinFactory = coinFactory;
         }
 
         [Route("add")]
@@ -43,11 +43,11 @@ namespace Coinage.Api.Controllers
             {
                 ICoin coin = _coinFactory.GetCoin<Coin>(parsedAmount);
                 _coinJar.AddCoin(coin);
-                return Ok($"Remaining volume in cointaner : {Math.Round(_coinJar.RemainingVolume, 2)}");
+                return Ok($"Coin added successfully, current amount - {_coinJar.GetTotalAmount()}c");
             }
             catch
             {
-                return Ok($"Not enough space in jar for coin, remaining volume : {Math.Round(_coinJar.RemainingVolume, 2)}");
+                return Ok($"Coin too big, not enough space in jar");
             }
         }
 
@@ -57,7 +57,7 @@ namespace Coinage.Api.Controllers
         {
             try
             {
-                return Ok(_coinJar.GetTotalAmount());
+                return Ok($"{_coinJar.GetTotalAmount()}c");
             }
             catch
             {

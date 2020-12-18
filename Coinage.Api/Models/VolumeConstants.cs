@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Coinage.Api.Data
+namespace Coinage.Api.Models
 {
     public class VolumeConstants : IVolumeConstants
     {
