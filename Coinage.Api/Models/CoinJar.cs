@@ -1,5 +1,6 @@
 ﻿using Coinage.Api.Extensions.MemoryCache;
 using Coinage.Core.Classes.Base;
+using Coinage.Core.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,9 @@ namespace Coinage.Api.Models
     public class CoinJar : CoinJarBase
     {
         private IMemoryCache _cache;
-        public CoinJar(IMemoryCache cache)
+        public CoinJar(IMemoryCache cache, IVolumeConstantsDataService volumeConstantsDataService)
         {
-            _cache = cache;
+            _cache = cache.Initialize(volumeConstantsDataService);
             Initialize();
         }
         private void Initialize()

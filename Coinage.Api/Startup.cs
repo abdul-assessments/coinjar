@@ -31,15 +31,13 @@ namespace Coinage.Api
             services.AddControllersWithViews();
             services.AddMvc(options => options.EnableEndpointRouting = false);
 
-            //dataservice registration
+            //dataservice dependency registration
             services.AddSingleton<IVolumeConstantsDataService>(new VolumeConstantsDataService<VolumeConstants>("Data/VolumeConstants.json"));
             services.AddSingleton<IDimensionDataService<ICircularCoinDimension>>(new DimensionsDataService<IEnumerable<CircularDimensions>>("Data/Dimensions.json", "US"));
 
-            //Coin jar and coin factory service registration
-            services.AddSingleton<ICoinFactory>(x => 
-                new CircularCoinFactory(x.GetRequiredService<IDimensionDataService<ICircularCoinDimension>>()));
-            services.AddSingleton<ICoinJar>(x => 
-                new CoinJar(x.GetRequiredService<IMemoryCache>().Initialize(x.GetRequiredService<IVolumeConstantsDataService>())));
+            //Coin jar and coin factory dependency registration
+            services.AddSingleton<ICoinFactory, CircularCoinFactory>();
+            services.AddSingleton<ICoinJar, CoinJar>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
