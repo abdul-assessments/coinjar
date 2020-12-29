@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Coinage.Api.Extensions.MemoryCache;
+using Coinage.Api.Extensions.ServiceCollection;
 using Coinage.Api.Models;
 using Coinage.Api.Services;
 using Coinage.Core.Classes;
@@ -31,13 +32,7 @@ namespace Coinage.Api
             services.AddControllersWithViews();
             services.AddMvc(options => options.EnableEndpointRouting = false);
 
-            //dataservice dependency registration
-            services.AddSingleton<IVolumeConstantsDataService>(new VolumeConstantsDataService<VolumeConstants>("Data/VolumeConstants.json"));
-            services.AddSingleton<IDimensionDataService<ICircularCoinDimension>>(new DimensionsDataService<IEnumerable<CircularDimensions>>("Data/Dimensions.json", "US"));
-
-            //Coin jar and coin factory dependency registration
-            services.AddSingleton<ICoinFactory, CircularCoinFactory>();
-            services.AddSingleton<ICoinJar, CoinJar>();
+            services.AddCoinJarWithJsonDependencies("Data/VolumeConstants.json", "Data/Dimensions.json", "US");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
